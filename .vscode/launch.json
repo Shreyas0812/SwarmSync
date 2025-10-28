@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}/../gym-pybullet-drones/drones/bin/python"
+            "python": "${workspaceFolder}/drones/bin/python"
         }
     ]
 }
