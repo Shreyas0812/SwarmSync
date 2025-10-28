@@ -3,14 +3,15 @@ import pybullet as p
 import pybullet_data
 import os
 import time
+import pkg_resources
+
 
 class TrajectoryVisualizer:
     def __init__(self, trajectory_file='trajectories.txt'):
-        # Parse trajectory file
+        # Parse trajectory file (your existing code)
         with open(trajectory_file, 'r') as f:
             lines = f.readlines()
         
-        # Parse data
         data_rows = []
         for line in lines:
             values = [float(x) for x in line.strip().split()]
@@ -21,47 +22,62 @@ class TrajectoryVisualizer:
         for i, row in enumerate(data_rows):
             M[i, :len(row)] = row
         
-        # Extract parameters
-        self.N = int(M[0, 0])  # Number of agents
-        self.N_cmd = int(M[0, 1])  # Number of commanded agents
-        self.pmin = M[0, 2:5]  # Minimum bounds
-        self.pmax = M[0, 5:8]  # Maximum bounds
+        self.N = int(M[0, 0])
+        self.N_cmd = int(M[0, 1])
+        self.pmin = M[0, 2:5]
+        self.pmax = M[0, 5:8]
+        self.po = M[1:4, 0:self.N].T
+        self.pf = M[4:7, 0:self.N_cmd].T
         
-        # Initial and target positions
-        self.po = M[1:4, 0:self.N].T  # Shape: (N, 3)
-        self.pf = M[4:7, 0:self.N_cmd].T  # Shape: (N_cmd, 3)
-        
-        # Extract trajectories
         start = 7
         num_timesteps = len(data_rows[start])
         self.pk = np.zeros((self.N_cmd, num_timesteps, 3))
         
         for i in range(self.N_cmd):
-            self.pk[i, :, 0] = M[start + 3*i, :num_timesteps]  # x
-            self.pk[i, :, 1] = M[start + 3*i + 1, :num_timesteps]  # y
-            self.pk[i, :, 2] = M[start + 3*i + 2, :num_timesteps]  # z
+            self.pk[i, :, 0] = M[start + 3*i, :num_timesteps]
+            self.pk[i, :, 1] = M[start + 3*i + 1, :num_timesteps]
+            self.pk[i, :, 2] = M[start + 3*i + 2, :num_timesteps]
         
         print(f"Loaded {self.N} drones, {self.N_cmd} commanded")
         print(f"Trajectory length: {num_timesteps} timesteps")
     
-    def visualize_in_pybullet(self, gui=True, downsample=10):
-        """Visualize trajectories in PyBullet"""
+    def visualize_in_pybullet(self, gui=True, downsample=10, use_urdf=True):
+        """Visualize trajectories in PyBullet
+        
+        Parameters:
+        -----------
+        gui : bool
+            Whether to use GUI mode
+        downsample : int
+            Downsampling factor for trajectory
+        use_urdf : bool
+            If True, load actual drone URDF. If False, use simple spheres.
+        """
         # Initialize PyBullet
         if gui:
             self.client = p.connect(p.GUI)
         else:
             self.client = p.connect(p.DIRECT)
         
-        # Set PyBullet data path to find URDFs
+        # Set PyBullet data path for plane.urdf
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         
         p.setGravity(0, 0, -9.8)
         p.setRealTimeSimulation(0)
         
-        # Load ground plane (now PyBullet can find it)
+        # Load ground plane
         plane_id = p.loadURDF("plane.urdf")
         
-        # Create simple drone representations using spheres (easier than loading URDFs)
+        # Get path to Crazyflie URDF
+        try:
+            assets_path = pkg_resources.resource_filename('gym_pybullet_drones', 'assets')
+            cf2x_urdf = os.path.join(assets_path, 'cf2x.urdf')
+            print(f"Found drone URDF at: {cf2x_urdf}")
+        except:
+            print("Could not find gym-pybullet-drones assets. Using simple shapes.")
+            use_urdf = False
+        
+        # Create drone representations
         drone_ids = []
         colors = [
             [1, 0, 0, 1],  # Red
@@ -71,29 +87,37 @@ class TrajectoryVisualizer:
         ]
         
         for i in range(self.N_cmd):
-            # Create visual shape (sphere)
-            visual_shape = p.createVisualShape(
-                shapeType=p.GEOM_SPHERE,
-                radius=0.1,
-                rgbaColor=colors[i % len(colors)]
-            )
+            if use_urdf and os.path.exists(cf2x_urdf):
+                # Load actual Crazyflie URDF
+                drone_id = p.loadURDF(
+                    cf2x_urdf,
+                    self.po[i],
+                    p.getQuaternionFromEuler([0, 0, 0]),
+                    flags=p.URDF_USE_INERTIA_FROM_FILE
+                )
+                print(f"Loaded drone {i} from URDF")
+            else:
+                # Fallback: Create visual sphere
+                visual_shape = p.createVisualShape(
+                    shapeType=p.GEOM_SPHERE,
+                    radius=0.1,
+                    rgbaColor=colors[i % len(colors)]
+                )
+                collision_shape = p.createCollisionShape(
+                    shapeType=p.GEOM_SPHERE,
+                    radius=0.1
+                )
+                drone_id = p.createMultiBody(
+                    baseMass=0.027,
+                    baseCollisionShapeIndex=collision_shape,
+                    baseVisualShapeIndex=visual_shape,
+                    basePosition=self.po[i]
+                )
+                print(f"Created sphere for drone {i}")
             
-            # Create collision shape
-            collision_shape = p.createCollisionShape(
-                shapeType=p.GEOM_SPHERE,
-                radius=0.1
-            )
-            
-            # Create multi-body
-            drone_id = p.createMultiBody(
-                baseMass=0.027,  # Crazyflie mass in kg
-                baseCollisionShapeIndex=collision_shape,
-                baseVisualShapeIndex=visual_shape,
-                basePosition=self.po[i]
-            )
             drone_ids.append(drone_id)
             
-            # Add initial position marker (small sphere)
+            # Add initial position marker
             p.addUserDebugLine(
                 self.po[i] - [0.05, 0, 0],
                 self.po[i] + [0.05, 0, 0],
@@ -101,17 +125,9 @@ class TrajectoryVisualizer:
                 lineWidth=2,
                 lifeTime=0
             )
-            p.addUserDebugLine(
-                self.po[i] - [0, 0.05, 0],
-                self.po[i] + [0, 0.05, 0],
-                lineColorRGB=[0.5, 0.5, 0.5],
-                lineWidth=2,
-                lifeTime=0
-            )
         
-        # Add visual markers for targets (X marks)
+        # Add target markers
         for i in range(self.N_cmd):
-            # Red X markers for targets
             p.addUserDebugLine(
                 self.pf[i] - [0.1, 0.1, 0],
                 self.pf[i] + [0.1, 0.1, 0],
@@ -132,9 +148,7 @@ class TrajectoryVisualizer:
         timesteps = pk_downsampled.shape[1]
         
         print(f"Replaying {timesteps} downsampled timesteps...")
-        print("Close the PyBullet window to exit.")
         
-        # Add time display
         time_text = p.addUserDebugText(
             text="Time: 0.00s",
             textPosition=[0, 0, 2.5],
@@ -165,7 +179,7 @@ class TrajectoryVisualizer:
                     )
             
             # Update time display
-            sim_time = t * downsample * 0.01  # Assuming 0.01s per timestep
+            sim_time = t * downsample * 0.01
             time_text = p.addUserDebugText(
                 text=f"Time: {sim_time:.2f}s",
                 textPosition=[0, 0, 2.5],
@@ -180,8 +194,6 @@ class TrajectoryVisualizer:
                 time.sleep(0.05)
         
         print("\nTrajectory replay complete!")
-        print("The drones will remain at their final positions.")
-        print("Close the PyBullet window to exit.")
         
         # Keep window open
         if gui:
@@ -194,6 +206,7 @@ class TrajectoryVisualizer:
         
         p.disconnect()
 
+
 if __name__ == "__main__":
     viz = TrajectoryVisualizer('trajectories.txt')
-    viz.visualize_in_pybullet(gui=True, downsample=20)
+    viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
