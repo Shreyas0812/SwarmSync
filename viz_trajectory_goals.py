@@ -220,7 +220,7 @@ class TrajectoryVisualizer:
                 visual_shape = p.createVisualShape(
                     shapeType=p.GEOM_SPHERE,
                     radius=0.12,
-                    rgbaColor=[1, 0.5, 0, 0.3]  # Orange, semi-transparent
+                    rgbaColor=colors[i % len(colors)][:3] + [0.3]
                 )
                 goal_drone_id = p.createMultiBody(
                     baseMass=0,
