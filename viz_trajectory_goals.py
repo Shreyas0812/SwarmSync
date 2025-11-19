@@ -5,6 +5,7 @@ import os
 import time
 import sys
 import pkg_resources
+from tqdm import tqdm
 
 
 class TrajectoryVisualizer:
@@ -95,32 +96,7 @@ class TrajectoryVisualizer:
         return goal_trajectories
     
 
-    def _print_progress_bar(self, iteration, total, bar_length=50, downsample=10):
-        """Print a progress bar to the terminal
-        
-        Parameters:
-        -----------
-        iteration : int
-            Current iteration (0 to total-1)
-        total : int
-            Total iterations
-        bar_length : int
-            Length of the progress bar in characters
-        """
-        percent = 100 * (iteration / float(total))
-        filled_length = int(bar_length * iteration // total)
-        bar = '█' * filled_length + '░' * (bar_length - filled_length)
-        
-        # Calculate time info
-        sim_time = iteration * downsample * 0.01  # ✓ Correct!
-        
-        # Print progress bar
-        sys.stdout.write(f'\r|{bar}| {percent:.1f}% | Step {iteration}/{total} | Time: {sim_time:.2f}s')
-        sys.stdout.flush()
-        
-        # Print newline on completion
-        if iteration == total:
-            print()
+
 
     def visualize_in_pybullet(self, gui=True, downsample=10, use_urdf=True):
         """Visualize trajectories in PyBullet
@@ -273,9 +249,7 @@ class TrajectoryVisualizer:
             lifeTime=0
         )
         
-        for t in range(timesteps):
-            # Update progress bar every step
-            self._print_progress_bar(t + 1, timesteps, downsample=downsample)
+        for t in tqdm(range(timesteps), desc="Replaying trajectory", unit="step"):
             
             # Update drone positions
             for i in range(self.N_cmd):
