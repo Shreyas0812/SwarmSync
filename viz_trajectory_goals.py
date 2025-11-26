@@ -1,3 +1,12 @@
+# viz_trajectory_goals.py
+"""
+Visualize drone trajectories and goals in PyBullet
+Created by: raorane 
+Usage: 
+python viz_trajectory_goals.py --trajectory trajectories.txt --goals goals.txt
+python viz_trajectory_goals.py -t path/to/traj.txt -g path/to/goal.txt
+"""
+
 import numpy as np
 import pybullet as p
 import pybullet_data
@@ -5,6 +14,7 @@ import os
 import time
 import sys
 import pkg_resources
+import argparse
 from tqdm import tqdm
 
 
@@ -338,5 +348,13 @@ class TrajectoryVisualizer:
 
 
 if __name__ == "__main__":
-    viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
+    parser = argparse.ArgumentParser(description='Visualize drone trajectories in PyBullet')
+    parser.add_argument('--trajectory', '-t', type=str, default='trajectories.txt',
+                        help='Path to trajectory file (default: trajectories.txt)')
+    parser.add_argument('--goals', '-g', type=str, default='goals.txt',
+                        help='Path to goals file (default: goals.txt)')
+    
+    args = parser.parse_args()
+    
+    viz = TrajectoryVisualizer(args.trajectory, args.goals)
     viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
