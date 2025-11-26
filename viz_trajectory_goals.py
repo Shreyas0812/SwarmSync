@@ -353,8 +353,33 @@ if __name__ == "__main__":
                         help='Path to trajectory file (default: trajectories.txt)')
     parser.add_argument('--goals', '-g', type=str, default='goals.txt',
                         help='Path to goals file (default: goals.txt)')
-    
     args = parser.parse_args()
-    
-    viz = TrajectoryVisualizer(args.trajectory, args.goals)
-    viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
+
+    visualize_from_experiment = False
+
+    if not visualize_from_experiment:
+        # Example usage without command line arguments
+        viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
+        viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=False)
+    else:
+        scenario_number = 8
+        reallocation_type = 'static' # static, reactive, predictive
+        run_number = 3
+
+        experiment_folder = f'../online_dmpc/cpp/results/experiments'
+
+        trajectory_file = f'{experiment_folder}/scenario_{scenario_number}/{reallocation_type}/run_{run_number}/trajectories.txt'
+        goals_file = f'{experiment_folder}/scenario_{scenario_number}/{reallocation_type}/run_{run_number}/goals.txt'
+
+        # Print experiment details so the Output/Terminal shows which experiment is being run
+        print(f"Running experiment -> scenario={scenario_number}, reallocation={reallocation_type}, run={run_number}")
+        print(f"Trajectory file: {trajectory_file}")
+        print(f"Goals file: {goals_file}")
+
+        if not os.path.exists(trajectory_file):
+            print(f"Warning: trajectory file not found: {trajectory_file}")
+        if not os.path.exists(goals_file):
+            print(f"Warning: goals file not found: {goals_file}")
+
+        viz = TrajectoryVisualizer(trajectory_file, goals_file)
+        viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
