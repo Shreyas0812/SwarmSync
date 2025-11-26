@@ -338,8 +338,5 @@ class TrajectoryVisualizer:
 
 
 if __name__ == "__main__":
-    # viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
-    # viz = TrajectoryVisualizer('scenario_1_trajectories.txt', 'scenario_1_goals.txt')
-    # viz = TrajectoryVisualizer('scenario_2_trajectories.txt', 'scenario_2_goals.txt')
-    viz = TrajectoryVisualizer('scenario_3_trajectories.txt', 'scenario_3_goals.txt')
+    viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
     viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
