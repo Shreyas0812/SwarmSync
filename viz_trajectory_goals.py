@@ -356,15 +356,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     visualize_from_experiment = False
+    visualize_from_scalability = True
 
-    if not visualize_from_experiment:
+    if not visualize_from_experiment and not visualize_from_scalability:
         # Example usage without command line arguments
         viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
         viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=False)
-    else:
-        scenario_number = 8
+    elif visualize_from_experiment:
+        scenario_number = 9
         reallocation_type = 'static' # static, reactive, predictive
-        run_number = 3
+        run_number = 1
 
         experiment_folder = f'../online_dmpc/cpp/results/experiments'
 
@@ -373,6 +374,28 @@ if __name__ == "__main__":
 
         # Print experiment details so the Output/Terminal shows which experiment is being run
         print(f"Running experiment -> scenario={scenario_number}, reallocation={reallocation_type}, run={run_number}")
+        print(f"Trajectory file: {trajectory_file}")
+        print(f"Goals file: {goals_file}")
+
+        if not os.path.exists(trajectory_file):
+            print(f"Warning: trajectory file not found: {trajectory_file}")
+        if not os.path.exists(goals_file):
+            print(f"Warning: goals file not found: {goals_file}")
+
+        viz = TrajectoryVisualizer(trajectory_file, goals_file)
+        viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
+    elif visualize_from_scalability:
+        scalability_folder = f'../online_dmpc/cpp/results/scalability'
+
+        num_drones = 10 # Change this to test different numbers of drones: 4, 6, 8, 10
+        reallocation_type = 'static' # static, reactive, predictive
+        run_number = 1
+
+        trajectory_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/run_{run_number}/trajectories.txt'
+        goals_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/run_{run_number}/goals.txt'
+
+        # Print scalability test details so the Output/Terminal shows which test is being run
+        print(f"Running scalability test -> num_drones={num_drones}, reallocation={reallocation_type}, run={run_number}")
         print(f"Trajectory file: {trajectory_file}")
         print(f"Goals file: {goals_file}")
 
