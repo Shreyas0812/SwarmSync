@@ -361,7 +361,7 @@ if __name__ == "__main__":
     if not visualize_from_experiment and not visualize_from_scalability:
         # Example usage without command line arguments
         viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
-        viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=False)
+        viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
     elif visualize_from_experiment:
         scenario_number = 9
         reallocation_type = 'static' # static, reactive, predictive
@@ -387,12 +387,13 @@ if __name__ == "__main__":
     elif visualize_from_scalability:
         scalability_folder = f'../online_dmpc/cpp/results/scalability'
 
-        num_drones = 10 # Change this to test different numbers of drones: 4, 6, 8, 10
+        num_drones = 8 # Change this to test different numbers of drones: 4, 8, 16, 32, 64, 128
         reallocation_type = 'static' # static, reactive, predictive
-        run_number = 1
+        collision_avoidance_type = 'on-demand' # on-demand, BVC
+        run_number = 1 # Change this to test different runs: 1, 2, 3
 
-        trajectory_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/run_{run_number}/trajectories.txt'
-        goals_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/run_{run_number}/goals.txt'
+        trajectory_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/{collision_avoidance_type}/run_{run_number}/trajectories.txt'
+        goals_file = f'{scalability_folder}/scenario_scale_{num_drones}/{reallocation_type}/{collision_avoidance_type}/run_{run_number}/goals.txt'
 
         # Print scalability test details so the Output/Terminal shows which test is being run
         print(f"Running scalability test -> num_drones={num_drones}, reallocation={reallocation_type}, run={run_number}")
