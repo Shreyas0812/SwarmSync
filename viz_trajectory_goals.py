@@ -280,7 +280,7 @@ class TrajectoryVisualizer:
                         p.getQuaternionFromEuler([0, 0, 0])
                     )
             
-            # Draw trajectory trails
+            # Draw trajectory trails (fade after 5 seconds)
             if t > 0:
                 for i in range(self.N_cmd):
                     p.addUserDebugLine(
@@ -288,10 +288,10 @@ class TrajectoryVisualizer:
                         pk_downsampled[i, t, :],
                         lineColorRGB=colors[i % len(colors)][:3],
                         lineWidth=2,
-                        lifeTime=200
+                        lifeTime=5.0  # Lines will disappear after 5 seconds
                     )
             
-            # Draw goal trajectory trails if available
+            # Draw goal trajectory trails if available (fade after 5 seconds)
             if goal_downsampled is not None and t > 0:
                 for i in range(min(self.N_cmd, goal_downsampled.shape[0])):
                     p.addUserDebugLine(
@@ -299,7 +299,7 @@ class TrajectoryVisualizer:
                         goal_downsampled[i, t, :],
                         lineColorRGB=[1, 0.5, 0],  # Orange for goal trajectories
                         lineWidth=1,
-                        lifeTime=0
+                        lifeTime=5.0  # Lines will disappear after 5 seconds
                     )
 
             # Update time display
