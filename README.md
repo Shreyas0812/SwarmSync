@@ -32,16 +32,6 @@ Adapting the optimization problem to track moving targets while preserving colli
 
 ---
 
-## Features
-
-- ✅ Multi-agent trajectory planning
-- ✅ Dynamic goal location tracking
-- ✅ Real-time collision avoidance
-- ✅ Physics-based simulation environment
-- ✅ 3D trajectory visualization with PyBullet
-- ✅ Performance analysis and plotting tools
-
----
 
 ## Installation
 
