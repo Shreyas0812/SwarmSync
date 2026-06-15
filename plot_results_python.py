@@ -3,6 +3,7 @@ Python script to visualize multi-agent trajectories from trajectories.txt
 This is equivalent to the MATLAB plot_results.m script
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -12,8 +13,23 @@ from mpl_toolkits.mplot3d import Axes3D
 view_states = False
 view_animation = True
 
+# Resolve trajectories.txt relative to this script, so it works from any working directory
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_traj_path = os.path.join(_script_dir, 'online_dmpc', 'cpp', 'results', 'trajectories.txt')
+
+# Fall back to a local copy if present (e.g. copied manually)
+if not os.path.exists(_traj_path):
+    _traj_path = os.path.join(_script_dir, 'trajectories.txt')
+
+if not os.path.exists(_traj_path):
+    raise FileNotFoundError(
+        "trajectories.txt not found. Run the C++ solver first:\n"
+        "  cd online_dmpc/cpp/build && ./bin/run\n"
+        f"Expected at: {os.path.join(_script_dir, 'online_dmpc', 'cpp', 'results', 'trajectories.txt')}"
+    )
+
 # Read the data file - handle ragged arrays (different column counts per row)
-with open('trajectories.txt', 'r') as f:
+with open(_traj_path, 'r') as f:
     lines = f.readlines()
 
 # Parse the file manually since rows have different column counts
