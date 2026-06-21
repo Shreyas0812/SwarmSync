@@ -46,29 +46,34 @@ All experiments ran 3 independent trials per scenario. Key findings:
 ```
 SwarmSync/
 ├── README.md
-├── THEORY.md                   # Math: Bézier curves, DMPC QP, collision avoidance, Hungarian algorithm
-├── viz_trajectory.py           # PyBullet 3D replay — static goals
-├── viz_trajectory_goals.py     # PyBullet 3D replay — dynamic goals
-├── plot_results_python.py      # Matplotlib trajectory plotter / animator
+├── THEORY.md                       # Math: Bézier curves, DMPC QP, collision avoidance, Hungarian
+├── Report.md                       # Full project writeup with results
+├── VISUALIZATION_GUIDE.md          # Guide to generated figures
 │
-├── online_dmpc/                # Git submodule — C++ DMPC solver (fork of Luis et al.)
+├── run_comprehensive_experiments.sh  # Batch runner — all 9 scenarios (static vs reallocation)
+├── run_scalability_experiments.sh    # Batch runner — scalability sweep (4–64 agents)
+├── extract_metrics.py                # Aggregate experiment results
+├── visualize_results.py              # Comparison figures
+├── analyze_scalability.py            # Scalability analysis and plots
+│
+├── viz_trajectory.py               # PyBullet 3D replay — static goals
+├── viz_trajectory_goals.py         # PyBullet 3D replay — dynamic goals
+├── plot_results_python.py          # Matplotlib trajectory plotter / animator
+│
+├── online_dmpc/                    # Git submodule — C++ DMPC solver (fork of Luis et al.)
 │   ├── cpp/
-│   │   ├── src/                # C++ source (simulator, generator, task reallocation)
-│   │   ├── include/            # Headers
-│   │   ├── config/             # config.json + scenario_1.json … scenario_9.json
-│   │   └── results/            # Solver output (trajectories.txt, goals.txt)
-│   ├── Report.md               # Full project writeup with results
-│   ├── VISUALIZATION_GUIDE.md  # Guide to generated figures
-│   ├── analyze_scalability.py
-│   ├── extract_metrics.py
-│   ├── visualize_results.py
-│   ├── run_comprehensive_experiments.sh
-│   └── run_scalability_experiments.sh
+│   │   ├── src/                    # C++ source (simulator, generator, task_reallocation, bvc_avoidance)
+│   │   ├── include/                # Headers
+│   │   ├── config/                 # config.json + scenario_1.json … scenario_9.json + help.txt
+│   │   └── results/                # Solver output (trajectories.txt, goals.txt)
+│   ├── matlab/                     # Original paper's MATLAB implementation + BVC reference
+│   ├── extras/                     # Third-party MATLAB plotting utilities
+│   └── README.md                   # Solver usage
 │
 └── docs/
-    ├── pitch/                  # Project pitch slides and PDF
-    ├── references/             # Luis et al. 2020 paper
-    └── submissions/            # Final course report and poster
+    ├── pitch/                      # Project pitch slides and PDF
+    ├── references/                 # Luis et al. 2020 paper
+    └── submissions/               # Final course report and poster
 ```
 
 ---
@@ -188,7 +193,7 @@ Nine pre-configured scenarios live in `online_dmpc/cpp/config/`. Switch by passi
 ## Running Experiments
 
 ```bash
-cd online_dmpc
+# from SwarmSync/ root
 
 # Run all 9 scenarios (static vs reallocation comparison)
 bash run_comprehensive_experiments.sh
