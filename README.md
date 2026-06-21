@@ -12,11 +12,22 @@ Traditional DMPC fixes the robot-to-goal assignment at the start and never revis
 
 - **Dynamic goals** — goals move during flight (circular orbits, linear translation, random jumps)
 - **Online task reallocation** — every `reallocation_period` seconds, the Hungarian algorithm re-solves the assignment problem and updates drone goals if a better assignment is found
-- **9 curated test scenarios** — from a simple 4-drone diagonal swap to 8-drone dense formation tests, plus BVC vs on-demand collision avoidance comparisons
-- **Scalability experiments** — tested up to 64 agents
+- **9 curated test scenarios** — from a 4-drone diagonal swap to denser multi-agent formations, plus BVC vs. on-demand collision-avoidance comparisons
+- **Scalability experiments** — automated sweep up to 64 agents
 - **PyBullet visualization** — replay planned trajectories in a 3D GUI with Crazyflie drone models
 
 The C++ solver lives in the `online_dmpc` submodule ([Shreyas0812/online_dmpc](https://github.com/Shreyas0812/online_dmpc)).
+
+---
+
+## Documentation
+
+| Document | What's in it |
+|---|---|
+| [`docs/THEORY.md`](docs/THEORY.md) | The math — dynamics model, Bézier parameterization, the DMPC QP, collision avoidance (on-demand & BVC), Hungarian reallocation |
+| [`docs/Report.md`](docs/Report.md) | Full project writeup with methodology, results, and discussion |
+| [`docs/Visualisation_guide.md`](docs/Visualisation_guide.md) | How to read each generated figure |
+| [`online_dmpc/README.md`](online_dmpc/README.md) | Building and running the C++ solver directly |
 
 ---
 
@@ -39,6 +50,8 @@ All experiments ran 3 independent trials per scenario. Key findings:
 - Scenario 2 required zero reallocations — static assignment was already optimal, showing the system correctly identifies when reallocation isn't needed
 - Solver runs comfortably above 200 Hz in all configurations (real-time capable)
 
+See [`docs/Report.md`](docs/Report.md) for the full results table and analysis.
+
 ---
 
 ## Project Structure
@@ -46,35 +59,38 @@ All experiments ran 3 independent trials per scenario. Key findings:
 ```
 SwarmSync/
 ├── README.md
-├── THEORY.md                       # Math: Bézier curves, DMPC QP, collision avoidance, Hungarian
-├── Report.md                       # Full project writeup with results
-├── VISUALIZATION_GUIDE.md          # Guide to generated figures
 │
-├── run_comprehensive_experiments.sh  # Batch runner — all 9 scenarios (static vs reallocation)
-├── run_scalability_experiments.sh    # Batch runner — scalability sweep (4–64 agents)
-├── extract_metrics.py                # Aggregate experiment results
-├── visualize_results.py              # Comparison figures
-├── analyze_scalability.py            # Scalability analysis and plots
+├── docs/                              # Documentation & deliverables
+│   ├── THEORY.md                      #   Math: dynamics, Bézier, DMPC QP, collision avoidance, Hungarian
+│   ├── Report.md                      #   Full project writeup with results
+│   ├── Visualisation_guide.md         #   Guide to the generated figures
+│   ├── pitch/                         #   Pitch slides (Marp source + PDF)
+│   ├── references/                    #   Luis et al. 2020 paper
+│   └── submissions/                   #   Final course report & poster
 │
-├── viz_trajectory.py               # PyBullet 3D replay — static goals
-├── viz_trajectory_goals.py         # PyBullet 3D replay — dynamic goals
-├── plot_results_python.py          # Matplotlib trajectory plotter / animator
+├── experiments/                       # Experiment orchestration & analysis
+│   ├── run_comprehensive_experiments.sh   #   All 9 scenarios (static vs reallocation)
+│   ├── run_scalability_experiments.sh     #   Scalability sweep (4–64 agents)
+│   ├── extract_metrics.py                 #   Aggregate experiment results
+│   ├── visualize_results.py               #   Comparison figures
+│   └── analyze_scalability.py             #   Scalability analysis & plots
 │
-├── online_dmpc/                    # Git submodule — C++ DMPC solver (fork of Luis et al.)
-│   ├── cpp/
-│   │   ├── src/                    # C++ source (simulator, generator, task_reallocation, bvc_avoidance)
-│   │   ├── include/                # Headers
-│   │   ├── config/                 # config.json + scenario_1.json … scenario_9.json + help.txt
-│   │   └── results/                # Solver output (trajectories.txt, goals.txt)
-│   ├── matlab/                     # Original paper's MATLAB implementation + BVC reference
-│   ├── extras/                     # Third-party MATLAB plotting utilities
-│   └── README.md                   # Solver usage
+├── viz/                               # Trajectory visualization
+│   ├── viz_trajectory.py              #   PyBullet 3D replay — static goals
+│   ├── viz_trajectory_goals.py        #   PyBullet 3D replay — dynamic goals
+│   └── plot_results_python.py         #   Matplotlib trajectory plotter / animator
 │
-└── docs/
-    ├── pitch/                      # Project pitch slides and PDF
-    ├── references/                 # Luis et al. 2020 paper
-    └── submissions/               # Final course report and poster
+└── online_dmpc/                       # Git submodule — C++ DMPC solver (fork of Luis et al.)
+    ├── cpp/
+    │   ├── src/                       #   C++ source (simulator, generator, task_reallocation, bvc_avoidance)
+    │   ├── include/                   #   Headers
+    │   ├── config/                    #   config.json + scenario_1…9.json + help.txt
+    │   └── results/                   #   Solver output (trajectories.txt, goals.txt)
+    ├── matlab/                        #   Original paper's MATLAB implementation + BVC reference
+    └── extras/                        #   Third-party MATLAB plotting utilities
 ```
+
+All Python/shell tooling resolves paths relative to its own location, so scripts can be run from the repo root regardless of where they live.
 
 ---
 
@@ -91,7 +107,7 @@ cd SwarmSync
 
 ### 2. Build the C++ solver
 
-**Dependencies:** CMake ≥ 3.0, C++14 compiler, Eigen3. qpOASES is bundled as a submodule.
+**Dependencies:** CMake ≥ 3.0, C++14 compiler, Eigen3. qpOASES and the Hungarian solver are bundled as submodules.
 
 ```bash
 cd online_dmpc/cpp
@@ -103,25 +119,20 @@ cmake .. && make -j4
 
 ```bash
 # from online_dmpc/cpp/build/
-./bin/run ../config/scenario_1.json
+./bin/run ../config/scenario_1.json     # a specific scenario
+./bin/run                               # the shipped default
 ```
 
-Output is written to `online_dmpc/cpp/results/trajectories.txt` and `goals.txt`.
-
-To run the default config:
-
-```bash
-./bin/run
-```
+The shipped default (`config.json`) is an **8-drone antipodal circle swap** — a clean collision-avoidance demo. Output is written to `online_dmpc/cpp/results/trajectories.txt` and `goals.txt`.
 
 ### 4. Visualize
+
+> Run visualization commands **from the repo root**. Install deps once: `pip install numpy matplotlib pybullet`.
 
 **PyBullet 3D replay (static goals):**
 
 ```bash
-# from SwarmSync/ root
-pip install numpy matplotlib pybullet
-python viz_trajectory.py
+python viz/viz_trajectory.py
 ```
 
 > **Windows:** pybullet requires C++ Build Tools. Use `conda install -c conda-forge pybullet` if you don't have them.
@@ -131,7 +142,7 @@ python viz_trajectory.py
 > pip install git+https://github.com/utiasDSL/gym-pybullet-drones.git
 > ```
 
-Key parameters at the bottom of `viz_trajectory.py`:
+Key parameters at the bottom of `viz/viz_trajectory.py`:
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -142,14 +153,14 @@ Key parameters at the bottom of `viz_trajectory.py`:
 **PyBullet 3D replay (dynamic goals):**
 
 ```bash
-python viz_trajectory_goals.py --trajectory online_dmpc/cpp/results/trajectories.txt \
-                                --goals online_dmpc/cpp/results/goals.txt
+python viz/viz_trajectory_goals.py --trajectory online_dmpc/cpp/results/trajectories.txt \
+                                    --goals online_dmpc/cpp/results/goals.txt
 ```
 
 **Matplotlib plotter:**
 
 ```bash
-python plot_results_python.py
+python viz/plot_results_python.py
 ```
 
 Generates 3D trajectory animations and distance-to-target plots.
@@ -188,6 +199,10 @@ Nine pre-configured scenarios live in `online_dmpc/cpp/config/`. Switch by passi
 | `scenario_8.json` | 4 | Circular goals — goals orbit fixed centers |
 | `scenario_9.json` | 4 | Combined — goals translate and rotate simultaneously |
 
+> **Note on BVC:** the `bvc_avoidance.cpp` method is a *proactive* variant of the on-demand
+> linearized collision constraint, not a literal Voronoi-cell partition — see `docs/THEORY.md` §4
+> for the code-vs-theory distinction.
+
 ---
 
 ## Running Experiments
@@ -196,18 +211,21 @@ Nine pre-configured scenarios live in `online_dmpc/cpp/config/`. Switch by passi
 # from SwarmSync/ root
 
 # Run all 9 scenarios (static vs reallocation comparison)
-bash run_comprehensive_experiments.sh
+bash experiments/run_comprehensive_experiments.sh
 
 # Run scalability sweep (4 → 64 agents)
-bash run_scalability_experiments.sh
+bash experiments/run_scalability_experiments.sh
 
 # Analyze and visualize results
-python extract_metrics.py
-python visualize_results.py
-python analyze_scalability.py
+python experiments/extract_metrics.py
+python experiments/visualize_results.py
+python experiments/analyze_scalability.py
 ```
 
 Results and figures are saved to `online_dmpc/cpp/results/experiments/`.
+
+> The `run_*.sh` scripts currently use Windows (CRLF) line endings; on Linux/macOS run them
+> via `bash experiments/<script>.sh` after converting to LF (`dos2unix`) if your shell rejects them.
 
 ---
 
@@ -217,17 +235,18 @@ Edit `online_dmpc/cpp/config/config.json` (or any scenario JSON):
 
 ```json
 {
-  "N": 4,                          // Number of agents
-  "reallocation_enabled": true,    // Enable Hungarian reallocation
+  "N": 8,                          // Number of agents (default demo: 8-drone antipodal swap)
+  "reallocation_enabled": false,   // Enable Hungarian reallocation (on in scenario_1 / scenario_3)
   "reallocation_period": 2.0,      // Seconds between reallocation checks
-  "motion_type": "random_jump",    // Goal motion: static | circular | translating | random_jump
+  "motion_type": "static",         // static | circular | translating | circular_translating | random_jump
   "collision_method": "on-demand", // on-demand | BVC
-  "simulation_duration": 60        // Seconds
+  "simulation_duration": 30        // Seconds
 }
 ```
 
 See `online_dmpc/cpp/config/help.txt` for a full parameter reference.
 
+---
 
 ## Reference
 
