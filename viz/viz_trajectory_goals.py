@@ -360,14 +360,15 @@ if __name__ == "__main__":
 
     if not visualize_from_experiment and not visualize_from_scalability:
         # Example usage without command line arguments
-        viz = TrajectoryVisualizer('trajectories.txt', 'goals.txt')
+        _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        viz = TrajectoryVisualizer(os.path.join(_root, 'online_dmpc', 'cpp', 'results', 'trajectories.txt'), os.path.join(_root, 'online_dmpc', 'cpp', 'results', 'goals.txt'))
         viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
     elif visualize_from_experiment:
         scenario_number = 9
         reallocation_type = 'static' # static, reactive, predictive
         run_number = 1
 
-        experiment_folder = f'../online_dmpc/cpp/results/experiments'
+        experiment_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'online_dmpc', 'cpp', 'results', 'experiments')
 
         trajectory_file = f'{experiment_folder}/scenario_{scenario_number}/{reallocation_type}/run_{run_number}/trajectories.txt'
         goals_file = f'{experiment_folder}/scenario_{scenario_number}/{reallocation_type}/run_{run_number}/goals.txt'
@@ -385,7 +386,7 @@ if __name__ == "__main__":
         viz = TrajectoryVisualizer(trajectory_file, goals_file)
         viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)
     elif visualize_from_scalability:
-        scalability_folder = f'../online_dmpc/cpp/results/scalability'
+        scalability_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'online_dmpc', 'cpp', 'results', 'scalability')
 
         num_drones = 8 # Change this to test different numbers of drones: 4, 8, 16, 32, 64, 128
         reallocation_type = 'static' # static, reactive, predictive

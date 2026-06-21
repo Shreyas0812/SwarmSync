@@ -208,5 +208,6 @@ class TrajectoryVisualizer:
 
 
 if __name__ == "__main__":
-    viz = TrajectoryVisualizer('trajectories.txt')
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    viz = TrajectoryVisualizer(os.path.join(_root, 'online_dmpc', 'cpp', 'results', 'trajectories.txt'))
     viz.visualize_in_pybullet(gui=True, downsample=20, use_urdf=True)

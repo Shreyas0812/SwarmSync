@@ -115,7 +115,7 @@ def extract_scalability_metrics():
     """Extract metrics from all scalability experiment result directories."""
     results = []
 
-    base_dir = './online_dmpc/cpp/results/scalability'
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'online_dmpc', 'cpp', 'results', 'scalability')
     
     # Scalability scenarios
     # scenarios = ['scenario_scale_4', 'scenario_scale_8', 'scenario_scale_16', 
@@ -184,7 +184,7 @@ def extract_scalability_metrics():
 def plot_scalability_analysis(df):
     """Generate comprehensive scalability analysis plots."""
     
-    output_dir = Path("./online_dmpc/cpp/results/scalability/figures")
+    output_dir = Path(__file__).resolve().parent.parent / "online_dmpc/cpp/results/scalability/figures"
     output_dir.mkdir(exist_ok=True)
     
     print("\n" + "="*60)
@@ -502,7 +502,7 @@ def main():
     print("="*60 + "\n")
     
     # Check if results exist, if not extract them
-    metrics_file = Path("./online_dmpc/cpp/results/scalability/scalability_metrics.csv")
+    metrics_file = Path(__file__).resolve().parent.parent / "online_dmpc/cpp/results/scalability/scalability_metrics.csv"
     
     if metrics_file.exists():
         print(f"Loading existing metrics from: {metrics_file}")

@@ -244,4 +244,4 @@ GitHub: [https://github.com/Shreyas0812/SwarmSync](https://github.com/Shreyas081
 
 ## Appendix B: Visualization Guide
 
-See `VISUALIZATION_GUIDE.md` for a detailed explanation of all generated figures and how to interpret them.
+See `Visualisation_guide.md` for a detailed explanation of all generated figures and how to interpret them.

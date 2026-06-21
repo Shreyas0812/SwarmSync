@@ -17,14 +17,14 @@ plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
 
 # Load data
-data_file = Path(__file__).parent / "online_dmpc/cpp/results/experiments/aggregated_metrics.csv"
+data_file = Path(__file__).resolve().parent.parent / "online_dmpc/cpp/results/experiments/aggregated_metrics.csv"
 df = pd.read_csv(data_file)
 
 # Parse cost_over_time column (it's stored as string representation of list)
 df['cost_over_time'] = df['cost_over_time'].apply(lambda x: ast.literal_eval(x) if x != '[]' else [])
 
 # Create output directory
-output_dir = Path(__file__).parent / "online_dmpc/cpp/results/experiments/figures"
+output_dir = Path(__file__).resolve().parent.parent / "online_dmpc/cpp/results/experiments/figures"
 output_dir.mkdir(exist_ok=True)
 
 print("="*60)

@@ -21,7 +21,7 @@ SCENARIOS=(
 )
 
 # Creating results directory
-mkdir -p "$SCRIPT_DIR/online_dmpc/cpp/results/experiments/"
+mkdir -p "$SCRIPT_DIR/../online_dmpc/cpp/results/experiments/"
 
 
 # Function to modify JSON config parameters
@@ -66,12 +66,12 @@ run_single_experiment() {
     echo "=========================================="
 
     # Create output directory
-    OUTPUT_DIR="$SCRIPT_DIR/online_dmpc/cpp/results/experiments/${scenario}/${method}/run_${run}/"
+    OUTPUT_DIR="$SCRIPT_DIR/../online_dmpc/cpp/results/experiments/${scenario}/${method}/run_${run}/"
     echo "Creating output directory: $OUTPUT_DIR"
     mkdir -p "$OUTPUT_DIR"
 
     # Copy config file and modify for this run
-    CONFIG_FILE="$SCRIPT_DIR/online_dmpc/cpp/config/${scenario}.json"
+    CONFIG_FILE="$SCRIPT_DIR/../online_dmpc/cpp/config/${scenario}.json"
     OUTPUT_CONFIG_FILE="$OUTPUT_DIR/config.json"
     echo "Using config file: $CONFIG_FILE"
 
@@ -105,12 +105,12 @@ with open('${OUTPUT_CONFIG_FILE}', 'w') as f:
 END_PYTHON
 
     # Run Simulation
-    cd "$SCRIPT_DIR/online_dmpc/cpp/bin/"
+    cd "$SCRIPT_DIR/../online_dmpc/cpp/bin/"
     ./run "${OUTPUT_CONFIG_FILE}" > "${OUTPUT_DIR}console.log" 2>&1
 
     # Copy reallocation log if it exists
-    if [ -f "$SCRIPT_DIR/online_dmpc/cpp/bin/reallocation_log.csv" ]; then
-        cp "$SCRIPT_DIR/online_dmpc/cpp/bin/reallocation_log.csv" "${OUTPUT_DIR}reallocation_log.csv"
+    if [ -f "$SCRIPT_DIR/../online_dmpc/cpp/bin/reallocation_log.csv" ]; then
+        cp "$SCRIPT_DIR/../online_dmpc/cpp/bin/reallocation_log.csv" "${OUTPUT_DIR}reallocation_log.csv"
     fi
 
     cd $SCRIPT_DIR
@@ -233,5 +233,5 @@ echo "════════════════════════�
 echo "  ALL EXPERIMENTS COMPLETE!"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "Results saved in: $SCRIPT_DIR/online_dmpc/cpp/results/experiments/"
+echo "Results saved in: $SCRIPT_DIR/../online_dmpc/cpp/results/experiments/"
 echo ""

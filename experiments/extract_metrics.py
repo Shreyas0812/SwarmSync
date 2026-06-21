@@ -85,7 +85,7 @@ def extract_all_metrics():
     """Extract metrics from all experiment result directories."""
     results = []
 
-    base_dir = './online_dmpc/cpp/results/experiments'
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'online_dmpc', 'cpp', 'results', 'experiments')
     
     # All scenarios from run_comprehensive_experiments.sh
     scenarios = [

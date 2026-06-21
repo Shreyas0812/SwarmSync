@@ -17,7 +17,7 @@ SCALABILITY_SCENARIOS=(
 )
 
 # Creating results directory
-mkdir -p "$SCRIPT_DIR/online_dmpc/cpp/results/scalability/"
+mkdir -p "$SCRIPT_DIR/../online_dmpc/cpp/results/scalability/"
 
 # Function to modify JSON config parameters
 modify_json_config() {
@@ -55,8 +55,8 @@ generate_scalability_configs() {
 import json
 import numpy as np
 
-base_config_path = '${SCRIPT_DIR}/online_dmpc/cpp/config/scenario_scale.json'
-config_dir = '${SCRIPT_DIR}/online_dmpc/cpp/config/scenario_scale_'
+base_config_path = '${SCRIPT_DIR}/../online_dmpc/cpp/config/scenario_scale.json'
+config_dir = '${SCRIPT_DIR}/../online_dmpc/cpp/config/scenario_scale_'
 
 # Load base config
 with open(base_config_path, 'r') as f:
@@ -122,12 +122,12 @@ run_single_experiment() {
     echo "========================================================"
 
     # Create output directory
-    OUTPUT_DIR="$SCRIPT_DIR/online_dmpc/cpp/results/scalability/${scenario}/${method}/run_${run}/"
+    OUTPUT_DIR="$SCRIPT_DIR/../online_dmpc/cpp/results/scalability/${scenario}/${method}/run_${run}/"
     echo "Creating output directory: $OUTPUT_DIR"
     mkdir -p "$OUTPUT_DIR"
 
     # Copy config file and modify for this run
-    CONFIG_FILE="$SCRIPT_DIR/online_dmpc/cpp/config/${scenario}.json"
+    CONFIG_FILE="$SCRIPT_DIR/../online_dmpc/cpp/config/${scenario}.json"
     OUTPUT_CONFIG_FILE="$OUTPUT_DIR/config.json"
     echo "Using config file: $CONFIG_FILE"
 
@@ -161,12 +161,12 @@ with open('${OUTPUT_CONFIG_FILE}', 'w') as f:
 END_PYTHON
 
     # Run Simulation
-    cd "$SCRIPT_DIR/online_dmpc/cpp/bin/"
+    cd "$SCRIPT_DIR/../online_dmpc/cpp/bin/"
     ./run "${OUTPUT_CONFIG_FILE}" > "${OUTPUT_DIR}console.log" 2>&1
 
     # Copy reallocation log if it exists
-    if [ -f "$SCRIPT_DIR/online_dmpc/cpp/bin/reallocation_log.csv" ]; then
-        cp "$SCRIPT_DIR/online_dmpc/cpp/bin/reallocation_log.csv" "${OUTPUT_DIR}reallocation_log.csv"
+    if [ -f "$SCRIPT_DIR/../online_dmpc/cpp/bin/reallocation_log.csv" ]; then
+        cp "$SCRIPT_DIR/../online_dmpc/cpp/bin/reallocation_log.csv" "${OUTPUT_DIR}reallocation_log.csv"
     fi
 
     cd $SCRIPT_DIR
@@ -231,7 +231,7 @@ echo "════════════════════════�
 echo "  ALL SCALABILITY EXPERIMENTS COMPLETE!"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "Results saved in: $SCRIPT_DIR/online_dmpc/cpp/results/scalability/"
+echo "Results saved in: $SCRIPT_DIR/../online_dmpc/cpp/results/scalability/"
 echo ""
 echo "To analyze results, run:"
 echo "  python3 analyze_scalability.py"
