@@ -7,3 +7,5 @@ goals.txt
 solver.log
 
 notes/
+
+**/**__pycache__/
