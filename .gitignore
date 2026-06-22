@@ -4,5 +4,6 @@ drones/
 
 trajectories.txt
 goals.txt
+solver.log
 
 notes/
