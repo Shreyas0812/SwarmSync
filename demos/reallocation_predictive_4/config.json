@@ -1,99 +1,59 @@
 {
-  "_comment": "DEFAULT DEMO: 8-Drone Antipodal Circle Swap",
-  "_description": "Eight drones evenly spaced on a 1.8 m ring (centered at 2,2 at z=1) each fly to the diametrically opposite point. All paths sweep through the center, so the on-demand collision avoidance visibly fans them apart before they re-form on the far side. A clean, reproducible showcase of the DMPC collision avoidance.",
-  "_expected_outcome": "Collision-free swap; drones converge toward the center, separate, and reach their antipodal goals.",
-  "N": 8,
-  "Ncmd": 8,
+  "_comment": "SCENARIO 1: Cross Pattern - Clear Benefit Case",
+  "_description": "Four agents swap diagonally in 4x4m workspace. This is the proof-of-concept where reallocation should show clear benefits.",
+  "_expected_outcome": "Reallocation should reduce completion time by recognizing optimal diagonal assignment immediately",
+  "N": 4,
+  "Ncmd": 4,
   "test": "default",
   "solver": "qpoases",
-  "simulation_duration": 30,
+  "simulation_duration": 60,
   "output_trajectories_paths": [
-    "trajectories.txt"
+    "/home/shreyas/Documents/MEAM5170_Controls/Project/SwarmSync/demos/reallocation_predictive_4/trajectories.txt"
   ],
   "output_goals_paths": [
-    "goals.txt"
+    "/home/shreyas/Documents/MEAM5170_Controls/Project/SwarmSync/demos/reallocation_predictive_4/goals.txt"
   ],
   "po": [
     [
-      3.8,
-      2.0,
+      0.5,
+      0.5,
       1.0
     ],
     [
-      3.273,
-      3.273,
+      3.5,
+      0.5,
       1.0
     ],
     [
-      2.0,
-      3.8,
+      3.5,
+      3.5,
       1.0
     ],
     [
-      0.727,
-      3.273,
-      1.0
-    ],
-    [
-      0.2,
-      2.0,
-      1.0
-    ],
-    [
-      0.727,
-      0.727,
-      1.0
-    ],
-    [
-      2.0,
-      0.2,
-      1.0
-    ],
-    [
-      3.273,
-      0.727,
+      0.5,
+      3.5,
       1.0
     ]
   ],
   "pf": [
     [
-      0.2,
-      2.0,
+      3.0,
+      3.0,
       1.0
     ],
     [
-      0.727,
-      0.727,
+      1.0,
+      3.0,
       1.0
     ],
     [
-      2.0,
-      0.2,
+      1.0,
+      1.0,
       1.0
     ],
     [
-      3.273,
-      0.727,
-      1.0
-    ],
-    [
-      3.8,
-      2.0,
-      1.0
-    ],
-    [
-      3.273,
-      3.273,
-      1.0
-    ],
-    [
-      2.0,
-      3.8,
-      1.0
-    ],
-    [
-      0.727,
-      3.273,
+      3.0,
+      1.0,
       1.0
     ]
   ],
@@ -156,17 +116,16 @@
   "goal_region_radius": 0.5,
   "goal_region_is_region": false,
   "goal_circular_radius": 2.0,
-  "goal_circular_omega": 0.5,
+  "goal_circular_omega": 0.2,
   "goal_translation_velocity": 0.2,
-  "reallocation_enabled": false,
+  "reallocation_enabled": true,
   "reallocation_period": 2.0,
-  "_use_predictive": false,
+  "_use_predictive": true,
   "_prediction_horizon": 1.0,
   "collision_method": "on-demand",
   "motion_type": "static",
   "motion_type1": "circular",
   "motion_type2": "translating",
   "motion_type3": "circular_translating",
-  "motion_type4": "random_jump",
-  "motion_type5": "static"
+  "motion_type4": "static"
 }

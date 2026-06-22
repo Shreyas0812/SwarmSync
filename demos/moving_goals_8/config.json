@@ -8,93 +8,93 @@
   "solver": "qpoases",
   "simulation_duration": 30,
   "output_trajectories_paths": [
-    "trajectories.txt"
+    "/home/shreyas/Documents/MEAM5170_Controls/Project/SwarmSync/demos/moving_goals_8/trajectories.txt"
   ],
   "output_goals_paths": [
-    "goals.txt"
+    "/home/shreyas/Documents/MEAM5170_Controls/Project/SwarmSync/demos/moving_goals_8/goals.txt"
   ],
   "po": [
     [
-      3.8,
-      2.0,
-      1.0
+      -3.92,
+      0,
+      1
     ],
     [
-      3.273,
-      3.273,
-      1.0
+      -2.772,
+      -2.772,
+      1
     ],
     [
-      2.0,
-      3.8,
-      1.0
+      0,
+      -3.92,
+      1
     ],
     [
-      0.727,
-      3.273,
-      1.0
+      2.772,
+      -2.772,
+      1
     ],
     [
-      0.2,
-      2.0,
-      1.0
+      3.92,
+      0,
+      1
     ],
     [
-      0.727,
-      0.727,
-      1.0
+      2.772,
+      2.772,
+      1
     ],
     [
-      2.0,
-      0.2,
-      1.0
+      0,
+      3.92,
+      1
     ],
     [
-      3.273,
-      0.727,
-      1.0
+      -2.772,
+      2.772,
+      1
     ]
   ],
   "pf": [
     [
-      0.2,
-      2.0,
-      1.0
+      1,
+      0,
+      1
     ],
     [
-      0.727,
-      0.727,
-      1.0
+      0.7071,
+      0.7071,
+      1
     ],
     [
-      2.0,
-      0.2,
-      1.0
+      0,
+      1,
+      1
     ],
     [
-      3.273,
-      0.727,
-      1.0
+      -0.7071,
+      0.7071,
+      1
     ],
     [
-      3.8,
-      2.0,
-      1.0
+      -1,
+      0,
+      1
     ],
     [
-      3.273,
-      3.273,
-      1.0
+      -0.7071,
+      -0.7071,
+      1
     ],
     [
-      2.0,
-      3.8,
-      1.0
+      0,
+      -1,
+      1
     ],
     [
-      0.727,
-      3.273,
-      1.0
+      0.7071,
+      -0.7071,
+      1
     ]
   ],
   "d": 5,
@@ -119,13 +119,13 @@
   "quad_coll": 1,
   "acc_cost": 0.015,
   "pmin": [
-    -0.5,
-    -0.5,
+    -5,
+    -5,
     0.2
   ],
   "pmax": [
-    4.5,
-    4.5,
+    8,
+    6.5,
     2.0
   ],
   "amin": [
@@ -155,15 +155,15 @@
   "min_cost_threshold": -0.01,
   "goal_region_radius": 0.5,
   "goal_region_is_region": false,
-  "goal_circular_radius": 2.0,
-  "goal_circular_omega": 0.5,
-  "goal_translation_velocity": 0.2,
+  "goal_circular_radius": 3.92,
+  "goal_circular_omega": 0.1,
+  "goal_translation_velocity": 0.05,
   "reallocation_enabled": false,
   "reallocation_period": 2.0,
   "_use_predictive": false,
   "_prediction_horizon": 1.0,
   "collision_method": "on-demand",
-  "motion_type": "static",
+  "motion_type": "circular_translating",
   "motion_type1": "circular",
   "motion_type2": "translating",
   "motion_type3": "circular_translating",
