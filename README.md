@@ -5,7 +5,7 @@
 <p align="center">
   <img src="demos/hero.gif" alt="SwarmSync demos: collision-avoidance swap, moving-goal tracking, and 32-drone scalability" width="720">
   <br>
-  <em>Collision-avoidance swap → moving-goal tracking → 32-drone scalability. Full demos in <a href="#shipped-demos"><code>demos/</code></a>.</em>
+  <em>Collision-avoidance swap → moving-goal tracking → 32-drone reallocation (static vs. with reallocation). Full demos in <a href="#shipped-demos"><code>demos/</code></a>.</em>
 </p>
 
 SwarmSync extends the online DMPC framework of Luis et al. (2020) in two directions: (1) goals can move during execution (circular, translating, or random-jump motion), and (2) an online Hungarian-algorithm task reallocation layer periodically re-assigns drones to goals to minimize total travel distance.
@@ -75,7 +75,7 @@ Six ready-to-run demos live under `demos/`. Each ships a `config.json` and a pre
 | `moving_goals_8` | 8 | Moving-goal tracking — goals orbit + drift; drones cross, then track in formation |
 | `reallocation_static_4` | 4 | Baseline: task reallocation **off** (fixed assignment) |
 | `reallocation_predictive_4` | 4 | Predictive Hungarian reallocation **on** — same scenario, re-assigned mid-flight |
-| `scalability_32` | 32 | 32-drone swarm reconfiguration with reallocation on |
+| `scalability_reallocation_32` | 32 | 32-drone swarm reconfiguration with reallocation on |
 | `scalability_static_32` | 32 | Same 32-drone swarm, reallocation off |
 
 The three pairs (`reallocation_*`, `scalability_*`) are meant to be watched side-by-side.
