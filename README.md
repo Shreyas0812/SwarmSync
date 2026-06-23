@@ -2,6 +2,12 @@
 
 **Distributed Model Predictive Control (DMPC) for Multi-Drone Motion Planning with Dynamic Goal Locations and Online Task Reallocation**
 
+<p align="center">
+  <img src="demos/hero.gif" alt="SwarmSync demos: collision-avoidance swap, moving-goal tracking, and 32-drone scalability" width="720">
+  <br>
+  <em>Collision-avoidance swap → moving-goal tracking → 32-drone scalability. Full demos in <a href="#shipped-demos"><code>demos/</code></a>.</em>
+</p>
+
 SwarmSync extends the online DMPC framework of Luis et al. (2020) in two directions: (1) goals can move during execution (circular, translating, or random-jump motion), and (2) an online Hungarian-algorithm task reallocation layer periodically re-assigns drones to goals to minimize total travel distance.
 
 ---
@@ -56,6 +62,23 @@ python record_trajectories.py antipodal_swap_8  # headless render -> demos/antip
 above to make your own. See `python record_trajectories.py -h` for render options (`--downsample`,
 `--scale`, `--no-trails`, …), **[Scenarios](#scenarios)** for the 9 preset configs, and
 **[Running Experiments](#running-experiments)** for the full sweeps.
+
+### Shipped demos
+
+Six ready-to-run demos live under `demos/`. Each ships a `config.json` and a pre-rendered
+`demo.mp4` — watch the video directly, or regenerate the data with
+`./run_dmpc.sh demos/<name>` and replay it with `view_trajectories.py` / `record_trajectories.py`.
+
+| Demo | Agents | Shows |
+|---|---|---|
+| `antipodal_swap_8` | 8 | Collision avoidance — antipodal ring swap through the center (static goals) |
+| `moving_goals_8` | 8 | Moving-goal tracking — goals orbit + drift; drones cross, then track in formation |
+| `reallocation_static_4` | 4 | Baseline: task reallocation **off** (fixed assignment) |
+| `reallocation_predictive_4` | 4 | Predictive Hungarian reallocation **on** — same scenario, re-assigned mid-flight |
+| `scalability_32` | 32 | 32-drone swarm reconfiguration with reallocation on |
+| `scalability_static_32` | 32 | Same 32-drone swarm, reallocation off |
+
+The three pairs (`reallocation_*`, `scalability_*`) are meant to be watched side-by-side.
 
 > **Windows:** pybullet needs C++ Build Tools — or `conda install -c conda-forge pybullet`.
 > The realistic Crazyflie model is optional: `pip install git+https://github.com/utiasDSL/gym-pybullet-drones.git` (else it falls back to spheres).
